@@ -1,16 +1,20 @@
 import axios from 'axios'
 import Link from 'next/link'
-import router from 'next/router'
+import {useRouter} from 'next/router'
 import React, { FormEvent, useState } from 'react'
 import InputGroup from '../components/InputGroup'
+import { useAuthState } from '../context/auth'
 
 const Register = () => {
 
+    const router = useRouter();
     const [email, setEmail] = useState("")
     const [errors, setErrors] = useState<any>({})
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const {authenticated} = useAuthState();
 
+    if(authenticated) router.push("/");
     const handleSubmit =async (event:FormEvent) => {
         event.preventDefault();
         try {
@@ -20,7 +24,7 @@ const Register = () => {
                 password,
                 username
             })
-            console.log('res', res);
+            // console.log('res', res);
             router.push('/login');          
         } catch (error : any) {
             console.log("error", error);

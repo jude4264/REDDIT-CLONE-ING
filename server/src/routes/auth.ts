@@ -4,6 +4,8 @@ import { User } from "../entities/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookie from "cookie";
+import userMiddleware from "../middlewares/user";
+import authMiddleware from "../middlewares/auth";
 
 const mapErros = (erros : object[]) =>{
     return erros.reduce((prev: any, err: any)=>{
@@ -13,10 +15,19 @@ const mapErros = (erros : object[]) =>{
 
 }
 
+const me = async (_: Request, res:Response) =>{
+
+    // console.log("me");
+    
+    return res.json(res.locals.user)
+} 
+
+
+
 const register = async (req: Request, res:Response) =>{
 
     const {email, password, username} = req.body;
-    console.log("email", email);
+    // console.log("email", email);
 
     try {
         let erros : any  = {};
@@ -24,7 +35,7 @@ const register = async (req: Request, res:Response) =>{
         const emailUser = await User.findOneBy({email})
         const usernameUser = await  User.findOneBy({username})
 
-        console.log("1-" , {username});
+        // console.log("1-" , {username});
         
 
         if(emailUser) erros.email = "이미 사용중인 이메일 입니다."
@@ -57,7 +68,7 @@ const register = async (req: Request, res:Response) =>{
 
 const login =async (req: Request , res: Response) => {
     const {username, password} = req.body;
-    console.log("0", username);
+    // console.log("0", username);
     
     try {
         let erros : any = {};
@@ -93,6 +104,7 @@ const login =async (req: Request , res: Response) => {
 }
 
 const router = Router();
+router.get('/me', userMiddleware, authMiddleware, me)
 router.post('/register', register);
 router.post('/login', login);
 
