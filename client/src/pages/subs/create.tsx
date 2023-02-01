@@ -15,14 +15,15 @@ const SubsCreate = () => {
 
     const handleSumbit = async(event : FormEvent) =>{
 
+        event.preventDefault();
+
         try {
             const res = await axios.post("/subs", {name, title, description})
+            // console.log("res", res);
             router.push(`/r/${res.data.name}`)
         } catch (error : any) {
             console.log(error);
-            setError(error.response.data)
-            
-            
+            setError(error.response.data || {})
         }
 
     }

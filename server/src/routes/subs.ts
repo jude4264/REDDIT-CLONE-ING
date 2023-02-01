@@ -28,7 +28,8 @@ const createSub = async (req: Request, res: Response, next) => {
         if (sub) error.name = "서브가 이미 존재합니다."
 
         if (Object.keys(error).length > 0) {
-            throw error
+            // console.log("subs.ts" , error);
+            return res.status(400).json(error);
         }
 
     } catch (error) {
