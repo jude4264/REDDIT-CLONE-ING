@@ -9,22 +9,22 @@ export default class Sub extends BaseEntity{
     
     @Index()
     @Column({unique: true})
-    name : String
+    name : string
 
     @Column()
-    title : String
+    title : string
 
     @Column({type: 'text' , nullable : true})
-    description : String
+    description : string
 
     @Column({nullable: true})
-    imageUrn : String
+    imageUrn : string
 
     @Column({nullable : true})
-    bannerUrn : String
+    bannerUrn : string
 
     @Column()
-    username : String;
+    username : string;
 
     @ManyToOne(()=>User)
     @JoinColumn({name : "username", referencedColumnName : "username"})
@@ -34,7 +34,7 @@ export default class Sub extends BaseEntity{
     posts : Post[]
 
     @Expose()
-    get imageUrl() : String {
+    get imageUrl() : string {
         return this.imageUrn ? `${process.env.APP_URL}/images/${this.imageUrn}` : 
         "https://www.gravatar.com/avatar?d=mp&f=y"
     }

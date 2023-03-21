@@ -1,3 +1,4 @@
+import { instanceToPlain } from "class-transformer";
 import { BaseEntity, CreateDateColumn, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export default abstract class  Entity extends BaseEntity {
@@ -6,9 +7,13 @@ export default abstract class  Entity extends BaseEntity {
     id: Number
 
     @CreateDateColumn()
-    createAt : Date
+    createdAt : Date
 
     @UpdateDateColumn()
-    updateAt: Date
+    updatedAt: Date
+    
+    toJSON() {
+        return instanceToPlain(this);
+    }
     
 }

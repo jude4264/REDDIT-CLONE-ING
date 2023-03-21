@@ -16,13 +16,16 @@ const Home: NextPage = () => {
     return await axios.get(url).then(res => res.data)
   }
   const address = "http://localhost:4000/api/subs/sub/topSubs";
-  const {data : topSubs } = useSWR<Sub[]>(address, fetcher)
+  // const { data: topSubs } = useSWR<Sub[]>(address, fetcher)
+  const { data: topSubs } = useSWR<Sub[]>(address)
 
+  console.log("topSubs------");
   console.log(topSubs);
+  console.log("topSubs------");
   
 
   return (
-    <div className="flex max-w-5xl px-4 pt-5 mx-auto">
+    <div className="flex max-w-5xl px-4 pt-5 mx-auto bg-white">
       {/* 포스트 리스트 */}
       <div className='w-full md:mr-3 md:w-8/12'> </div>
       {/* 사이트바 */}
@@ -59,7 +62,7 @@ const Home: NextPage = () => {
           </div>
           {authenticated &&
           <div className='w-full py-6 text-center'>
-            <Link href="/subs/cearte">
+            <Link href="/subs/create">
               <span className='w-full p-2 text-center text-white bg-gray-400 rounded'>
                 커뮤니티 만들기
               </span>
