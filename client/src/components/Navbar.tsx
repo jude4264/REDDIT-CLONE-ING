@@ -31,7 +31,7 @@ const Navbar : React.FC = () => {
           <input
             type="text"
             placeholder='Search...'
-            className='px-3 py-1 bg-transparent rounded focus:outline-none'
+            className='px-3 py-1 bg-transparent rounded focus:outline-none text-black'
           />
         </div>
       </div>

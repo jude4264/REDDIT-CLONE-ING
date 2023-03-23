@@ -3,15 +3,12 @@ import userMiddleware from "../middlewares/user"
 import authMiddleware from "../middlewares/auth"
 import Sub from "../entities/Sub";
 import Post from "../entities/Post";
+import Comment from "../entities/Comment";
 
 
 const getPost =async (req : Request , res :  Response) => {
-    const {identifier, slug} = req.body;
-    console.log("---identifier,slug---");
-    console.log(req.body);
-    console.log(identifier,slug);
-    console.log("---identifier,slug---");
-    
+    const {identifier, slug} = req.params;
+   
     try {
         
         const post = await Post.findOneOrFail({
@@ -32,17 +29,39 @@ const getPost =async (req : Request , res :  Response) => {
     } 
 }
 
+const getPostComment = async (req: Request, res: Response) => {
+
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ get called");
+    
+ 
+    const { identifier, slug } = req.params;
+    
+
+    try {
+        const post = await Post.findOneByOrFail({ identifier, slug })
+        console.log(post.id);
+        
+        const comments = await Comment.find({
+            where: { postId: post.id },
+            order: { createdAt: "DESC" },
+            relations: ["votes"],
+        })
+        if (res.locals.user) {
+            comments.forEach((c) => c.setUserVote(res.locals.user));
+        }
+        
+        return res.json(comments);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "문제가 발생했습니다." });
+    }
+}
+
+
 
 const createPost = async (req : Request , res :  Response) => {
-    console.log("adsasd");
-
-    console.log(req.body);
-    
 
     const {title, body, sub} = req.body;
-
-    
-
     if(title.trim()===""){
         return res.status(400).json({ title : "제목은 비워둘 수 없습니다."})
     }
@@ -69,9 +88,35 @@ const createPost = async (req : Request , res :  Response) => {
     
 }
 
+const creatPostComment = async (req : Request , res :  Response) =>{
+    console.log("댓글등록");
+    
+    const {identifier , slug} = req.params;
+    const body = req.body.body
+
+    try {
+        const post = await Post.findOneByOrFail({ identifier , slug})
+        const comment = new Comment()
+        comment.body = body;
+        comment.user =  res.locals.user;
+        comment.post = post;
+        if(res.locals.user){
+            post.setUserVote(res.locals.user);
+        }
+        await comment.save();
+        return res.json(comment)
+    } catch (error) {
+        console.log(error);
+        return res.status(404).json({error : "게시물을 찾을 수 없습니다."})   
+    }
+}
+
+
+
 const router = Router()
 router.get("/:identifier/:slug", userMiddleware, getPost);
-// router.get("/:identifier/:slug" , userMiddleware,authMiddleware , getPost)
-router.post("/" , userMiddleware,authMiddleware , createPost)
+router.post("/" , userMiddleware, authMiddleware , createPost)
+router.post("/:identifier/:slug/comments", userMiddleware, creatPostComment);
+router.get("/:identifier/:slug/comments", userMiddleware, getPostComment);
 
 export default router;
